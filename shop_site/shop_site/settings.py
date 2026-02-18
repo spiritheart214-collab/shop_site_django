@@ -119,7 +119,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Переопределение пользователя
-USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 # Настройка путей для файлов и изображений
 MEDIA_URL = "/media/"
