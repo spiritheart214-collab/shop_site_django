@@ -13,12 +13,14 @@ class UserAdmin(BaseUserAdmin):
     list_display_links = ["colored_full_name", "telephone"]
     list_filter = ("first_name", "date_joined",)
     search_fields = ["first_name", "last_name", "email", "telephone"]
+    readonly_fields = ["avatar_prewiew_large"]
     ordering = "-date_joined",
 
     fieldsets = (
         (
             "Личные данные", {
-                "fields": ("first_name", "last_name", "patronymic", "email", "telephone", "avatar"),
+                "fields": ("first_name", "last_name", "patronymic", "email", "telephone",
+                           "avatar_prewiew_large", "avatar"),
                 "classes": ("wide",)
             }),
 
@@ -30,7 +32,7 @@ class UserAdmin(BaseUserAdmin):
     )
 
     def avatar_prewiew(self, obj: User) -> str:
-        """Показать аватар пользователя в админке"""
+        """Показать аватар пользователя в админке (список всех пользователей)"""
 
         if obj.avatar:
             html_avatar = format_html(
@@ -41,15 +43,36 @@ class UserAdmin(BaseUserAdmin):
         return "-"
     avatar_prewiew.short_description = "Аватар"
 
-    def colored_full_name(self, obj: User) -> str:
-        """Подсветка текста для суперпользователя"""
+    def avatar_prewiew_large(self, obj: User) -> str:
+        """Показать аватар пользователя в админке (конкретная запись)"""
+        if obj.avatar:
+            html_avatar = format_html(
+                '<img src="{}" style="width:150px; height:150px; border-radius:10%; object-fit:cover;" />',
+                obj.avatar.url
+            )
+            return html_avatar
+        return "Фото не загруженно"
+    avatar_prewiew_large.short_description = "Текущий аватар"
 
+    def colored_full_name(self, obj: User) -> str:
+        """Подсветка текста для суперпользователя и администратора"""
+
+        # Суперпользователь
         if obj.is_superuser:
             html_superuser = format_html(
                 '<span style="color: #d8eb34; font-weight: bold;">{}</span>',
                 obj.full_name
             )
             return html_superuser
+
+        # Администратор
+        elif obj.is_staff:
+            html_staff = format_html(
+                '<span style="color: #32a852; font-weight: bold;">{}</span>',
+                obj.full_name
+            )
+            return html_staff
+
         return obj.full_name
     colored_full_name.short_description = "ФИО"
 
