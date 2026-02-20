@@ -1,4 +1,4 @@
-"""Модуль создает пользователя для админки"""
+"""Модуль создает cупер пользователя для админки"""
 from django.core.management.base import BaseCommand
 
 from .config import User
@@ -12,22 +12,21 @@ class Command(BaseCommand):
     - Проверяет существование пользователя по email и телефону
     - Создаёт пользователя, если он отсутствует
     """
-    help = "Создание стандартного пользователя (User Default)"
+    help = "Создание супер пользователя (User Super)"
 
     def handle(self, *args, **options) -> None:
         """Основная логика выполнения команды."""
 
         # Данные пользователя
-        username = "default_user"
+        username = "super_user"
         first_name = "User"
-        last_name = "Default"
-        email = "default_user@mail.ru"
-        telephone = "89999999999"
-        password = "default_user_password_1234"
+        last_name = "Super"
+        email = "super_user@mail.ru"
+        telephone = "89998887777"
+        password = "super_user_password"
 
         # Существует ли такой пользователь
         if is_user(username=username, email=email, telephone=telephone):
-
             self.stdout.write(
                 self.style.WARNING("Пользователь уже существует.")
             )
@@ -40,7 +39,7 @@ class Command(BaseCommand):
             return None
 
         # Создание пользователя
-        user = User.objects.create_user(
+        user = User.objects.create_superuser(
             username=username,
             first_name=first_name,
             last_name=last_name,
