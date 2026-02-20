@@ -129,3 +129,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Переадрисация при успешной входе
 LOGIN_REDIRECT_URL = reverse_lazy("user:hello_world")
+LOGOUT_REDIRECT_URL = reverse_lazy("users:login")

@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LoginView
 from django.urls import path
 
-from .views import HelloWorldView
+from .views import HelloWorldView, UserLogoutView
 
 
 app_name = "users"
@@ -14,5 +14,7 @@ urlpatterns = [
         redirect_authenticated_user=True,
         next_page='users:hello_world'
     ), name='login'),
+
+    path("logout/", UserLogoutView.as_view(), name="logout"),
 
 ]

@@ -1,11 +1,14 @@
-from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render
-from django.views import View
+from django.contrib.auth.views import LogoutView
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
 
 
-class HelloWorldView(View):
+class HelloWorldView(TemplateView):
     """Временная страница. Для ридиректов и тестов"""
 
-    def get(self, requests: HttpRequest) -> HttpResponse:
-        """Вывод Hello world!"""
-        return HttpResponse("Hello world!")
+    template_name = "users/hello_world.html"
+
+
+class UserLogoutView(LogoutView):
+    """Ралогирование пользователя"""
+    next_page = reverse_lazy("users:login")
