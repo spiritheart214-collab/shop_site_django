@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+from django.urls import reverse_lazy
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -124,3 +126,6 @@ AUTH_USER_MODEL = 'users.User'
 # Настройка путей для файлов и изображений
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# Переадрисация при успешной входе
+LOGIN_REDIRECT_URL = reverse_lazy("user:hello_world")
