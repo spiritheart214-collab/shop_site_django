@@ -58,7 +58,7 @@ ROOT_URLCONF = 'shop_site.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -120,6 +120,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
+
 # Переопределение пользователя
 AUTH_USER_MODEL = 'users.User'
 
@@ -127,6 +131,6 @@ AUTH_USER_MODEL = 'users.User'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# Переадрисация при успешной входе
-LOGIN_REDIRECT_URL = reverse_lazy("user:hello_world")
+# Редирект при успешном входе
+LOGIN_REDIRECT_URL = reverse_lazy("users:hello_world")
 LOGOUT_REDIRECT_URL = reverse_lazy("users:login")
