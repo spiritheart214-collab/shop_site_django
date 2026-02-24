@@ -1,0 +1,22 @@
+<!-- БЛОК ДЛЯ ВСПЛЫВАЮЩИХ СООБЩЕНИЙ -->
+<div class="toast-container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="toast toast-{{ message.tags }}" data-toast>
+                <div class="toast-content">
+                    <div class="toast-icon">
+                        {% if message.tags == 'error' %}❌
+                        {% elif message.tags == 'success' %}✅
+                        {% elif message.tags == 'warning' %}⚠️
+                        {% elif message.tags == 'info' %}ℹ️
+                        {% else %}📢
+                        {% endif %}
+                    </div>
+                    <div class="toast-message">{{ message }}</div>
+                    <button class="toast-close" data-toast-close>&times;</button>
+                </div>
+                <div class="toast-progress" data-toast-progress></div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

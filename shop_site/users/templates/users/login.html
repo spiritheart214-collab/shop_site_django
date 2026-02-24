@@ -6,6 +6,31 @@
     <link rel="stylesheet" href="{% static 'users/css/login.css' %}">
 </head>
 <body>
+
+<!-- БЛОК ДЛЯ ВСПЛЫВАЮЩИХ СООБЩЕНИЙ -->
+    <div class="toast-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="toast toast-{{ message.tags }}" data-toast>
+                    <div class="toast-content">
+                        <div class="toast-icon">
+                            {% if message.tags == 'error' %}❌
+                            {% elif message.tags == 'success' %}✅
+                            {% elif message.tags == 'warning' %}⚠️
+                            {% elif message.tags == 'info' %}ℹ️
+                            {% else %}📢
+                            {% endif %}
+                        </div>
+                        <div class="toast-message">{{ message }}</div>
+                        <button class="toast-close" data-toast-close>&times;</button>
+                    </div>
+                    <div class="toast-progress" data-toast-progress></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+
     <form method="post">
         <h2>Вход на сайт</h2>
 
@@ -45,5 +70,7 @@
 
         <p>Нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрироваться</a></p>
     </form>
+
+<script src="{% static 'js/toasts.js' %}"></script>
 </body>
 </html>

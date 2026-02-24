@@ -11,6 +11,8 @@
 {% endblock %}
 
 {% block content %}
+
+
     <div class="profile-container">
         <h1>Личный кабинет</h1>
 
@@ -30,6 +32,11 @@
                     <p>Телефон: {{ user.telephone }}</p>
                     <a href="{% url 'users:user_update' pk=user.pk %}" class="btn btn-primary">Редактировать профиль</a>
                     <a href="#" class="btn btn-secondary">Сменить пароль</a>
+
+                     <form method="post" action="{% url 'users:logout' %}" class="logout-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-logout">Выйти</button>
+                    </form>
                 </div>
             </div>
 

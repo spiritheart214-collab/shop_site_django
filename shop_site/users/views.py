@@ -18,10 +18,10 @@ class UserRegistrationView(CreateView):
     def form_valid(self, form: UserRegistrationsForm):
         """Автоматический логин после регистрации"""
 
-        user = form.save()
-        login(self.request, user)
+        response = super().form_valid(form)
+        login(self.request, self.object)
 
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self):
         """Редирект на страницу о пользователе (UserDetailView)"""
@@ -72,8 +72,12 @@ class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def handle_no_permission(self):
         """Если нет доступа, то вывод сообщения"""
-        messages.error(request=self.request, message="У вас нет доступа к этой странице")
-        return redirect("users:user", kwargs={"pk": self.request.user.pk})
+        messages.error(request=self.request, message="У вас нет доступа к этой странице!")
+
+        if self.request.user.is_authenticated:
+            return redirect("users:user", pk=self.request.user.pk)
+
+        return redirect("users:login")
 
 
 class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -88,8 +92,6 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
          - суперпользователь
          - стафф
         """
-        if self.request.user.pk is None:
-            return False
         user_page_owner: User = self.get_object()
         user_request: User = self.request.user
 
@@ -108,9 +110,12 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def handle_no_permission(self):
         """Если нет доступа, то вывод сообщения"""
-        messages.error(request=self.request, message="У вас нет доступа к этой странице")
-        return redirect("users:user", kwargs={"pk": self.request.user.pk})
+        messages.error(request=self.request, message="У вас нет доступа к этой странице!")
+
+        if self.request.user.is_authenticated:
+            return redirect("users:user", pk=self.request.user.pk)
+
+        return redirect("users:login")
 
 # Todo - возможно тут вообще не нужен handle_no_permission. Иследовать этот момент
 # Todo - написать миксин, в котором будет переопределен test_func, так как он повторяется в двух классах
-

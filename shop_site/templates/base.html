@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Интернет-магазин{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/popup_window.css' %}">
     {% block extra_css %}
     {% endblock %}
 </head>
 <body>
+    {% include 'popup_window.html' %}
     <!-- ШАПКА САЙТА -->
     <header class="header">
         <div class="container">
@@ -160,7 +162,7 @@
             </div>
         </div>
     </footer>
-
+    <script src="{% static 'js/toasts.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
