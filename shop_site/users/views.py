@@ -1,4 +1,5 @@
 from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView
@@ -42,7 +43,20 @@ class UserLogoutView(LogoutView):
     next_page = reverse_lazy("users:login")
 
 
-class UserDetailView(DetailView):
+class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     """Страница пользователя"""
     template_name = "users/user_detail.html"
     model = User
+
+    def test_func(self):
+        """Страницу может посетить только сам пользователь/суперпользователь/стафф"""
+        user_page_owner: User = self.get_object()
+        user_request: User = self.request.user
+
+        can_see_the_page: bool = (user_request.is_superuser or
+                                  user_request.is_staff or
+                                  user_request == user_page_owner)
+
+        if can_see_the_page:
+            return True
+        return False
