@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Личный кабинет
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'users/css/user_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="profile-container">
+        <h1>Личный кабинет</h1>
+
+        <div class="profile-grid">
+            <!-- Блок с аватаркой и ФИО -->
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="Аватар">
+                    {% else %}
+                        <div class="avatar-placeholder">Нет фото</div>
+                    {% endif %}
+                </div>
+                <div class="profile-info">
+                    <h2>{{ user.full_name }}</h2>
+                    <p>Email: {{ user.email }}</p>
+                    <p>Телефон: {{ user.telephone }}</p>
+                    <a href="#" class="btn btn-primary">Редактировать профиль</a>
+                    <a href="#" class="btn btn-secondary">Сменить пароль</a>
+                </div>
+            </div>
+
+            <!-- Блок с последним заказом -->
+            <div class="orders-card">
+                <h2>Последний заказ</h2>
+                {% if last_order %}
+                    <div class="order-info">
+                        <p>Заказ №{{ last_order.id }}</p>
+                        <p>Сумма: {{ last_order.total_price }} руб.</p>
+                        <p>Статус: {{ last_order.status }}</p>
+                        <a href="#" class="btn btn-outline">Детали заказа</a>
+                    </div>
+                {% else %}
+                    <p class="no-orders">У вас пока нет заказов</p>
+                {% endif %}
+                <a href="#" class="btn btn-link">История заказов</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

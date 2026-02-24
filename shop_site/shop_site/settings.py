@@ -132,5 +132,5 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Редирект при успешном входе
-LOGIN_REDIRECT_URL = reverse_lazy("users:hello_world")
+LOGIN_REDIRECT_URL = reverse_lazy("users:user")
 LOGOUT_REDIRECT_URL = reverse_lazy("users:login")
