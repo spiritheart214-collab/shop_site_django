@@ -1,11 +1,13 @@
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView, DetailView, UpdateView
 
 from .models import User
-from .forms import UserRegistrationsForm
+from .forms import UserRegistrationsForm, UserUpdateForm
 
 
 class UserRegistrationView(CreateView):
@@ -47,9 +49,16 @@ class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     """Страница пользователя"""
     template_name = "users/user_detail.html"
     model = User
+    context_object_name = "user"
 
     def test_func(self):
-        """Страницу может посетить только сам пользователь/суперпользователь/стафф"""
+        """
+        Страницу может посетить:
+         - пользователь
+         - суперпользователь
+         - стафф
+        """
+
         user_page_owner: User = self.get_object()
         user_request: User = self.request.user
 
@@ -60,3 +69,48 @@ class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         if can_see_the_page:
             return True
         return False
+
+    def handle_no_permission(self):
+        """Если нет доступа, то вывод сообщения"""
+        messages.error(request=self.request, message="У вас нет доступа к этой странице")
+        return redirect("users:user", kwargs={"pk": self.request.user.pk})
+
+
+class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    template_name = "users/user_update.html"
+    model = User
+    form_class = UserUpdateForm
+
+    def test_func(self):
+        """
+        Обновить информацию о пользователе может:
+         - пользователь
+         - суперпользователь
+         - стафф
+        """
+        if self.request.user.pk is None:
+            return False
+        user_page_owner: User = self.get_object()
+        user_request: User = self.request.user
+
+        can_see_the_page: bool = (user_request.is_superuser or
+                                  user_request.is_staff or
+                                  user_request == user_page_owner)
+
+        if can_see_the_page:
+            return True
+        return False
+
+    def get_success_url(self):
+        """Редирект на страницу о пользователе (UserDetailView)"""
+        url = reverse_lazy("users:user", kwargs={"pk": self.request.user.pk})
+        return url
+
+    def handle_no_permission(self):
+        """Если нет доступа, то вывод сообщения"""
+        messages.error(request=self.request, message="У вас нет доступа к этой странице")
+        return redirect("users:user", kwargs={"pk": self.request.user.pk})
+
+# Todo - возможно тут вообще не нужен handle_no_permission. Иследовать этот момент
+# Todo - написать миксин, в котором будет переопределен test_func, так как он повторяется в двух классах
+

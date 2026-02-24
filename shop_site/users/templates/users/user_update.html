@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Редактирование профиля
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'users/css/user_update.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-edit-container">
+    <div class="profile-edit-header">
+        <h1>Редактирование профиля</h1>
+        <a href="{% url 'users:user' pk=user.pk %}" class="btn btn-secondary">← Назад</a>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data" class="profile-edit-form">
+        {% csrf_token %}
+        
+        <!-- Неполевые ошибки -->
+        {% if form.non_field_errors %}
+            <div class="alert alert-error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <div class="form-grid">
+            <!-- Левая колонка с аватаркой -->
+            <div class="form-column avatar-column">
+                <div class="avatar-section">
+                    <div class="current-avatar">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="Текущий аватар" id="avatar-preview">
+                        {% else %}
+                            <div class="avatar-placeholder" id="avatar-preview">Нет фото</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="avatar-field">
+                        <label for="{{ form.avatar.id_for_label }}">{{ form.avatar.label }}</label>
+                        {{ form.avatar }}
+                        {% if form.avatar.errors %}
+                            <div class="field-error">{{ form.avatar.errors }}</div>
+                        {% endif %}
+                        {% if form.avatar.help_text %}
+                            <small class="help-text">{{ form.avatar.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Правая колонка с данными -->
+            <div class="form-column data-column">
+                {% for field in form %}
+                    {% if field.name != 'avatar' %}
+                        <div class="form-group {% if field.errors %}has-error{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="field-error">{{ field.errors }}</div>
+                            {% endif %}
+                            {% if field.help_text %}
+                                <small class="help-text">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            <a href="#" class="btn btn-secondary">Сменить пароль</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
