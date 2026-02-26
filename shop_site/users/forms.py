@@ -1,29 +1,35 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.core.files.uploadedfile import InMemoryUploadedFile
+
+from .forms_mixin import CleanDataMixin
 
 User = get_user_model()
 
 
-class UserRegistrationsForm(UserCreationForm):
+class UserRegistrationsForm(CleanDataMixin, UserCreationForm):
     """Форма регистрации пользователя"""
 
     class Meta:
         """Настройка формы"""
         model = User
-        fields = (
-            "username",
-            "first_name",
-            "last_name",
-            "email",
-            "telephone",
-            "password1",
-            "password2"
-        )
+        fields = ("username", "email", "telephone", "password1", "password2")
+
+    def clean_username(self):
+        """Валидация имени"""
+        username: str = self.cleaned_data.get("username")
+
+        if not username:
+            raise forms.ValidationError("Введите username")
+
+        if len(username) < 3:
+            raise forms.ValidationError("Минимум 3 символа")
+
+        return username
 
 
-class UserUpdateForm(forms.ModelForm):
+class UserUpdateForm(CleanDataMixin, forms.ModelForm):
     """Форма обновления пользователя"""
 
     class Meta:
@@ -38,27 +44,18 @@ class UserUpdateForm(forms.ModelForm):
 
         if avatar:
             if avatar.size > size_limit:
-                return forms.ValidationError(f"'Размер фото не должен превышать {size_limit} МБ'")
+                raise forms.ValidationError(f"'Размер фото не должен превышать {size_limit} МБ'")
 
             return avatar
 
-    def clean_email(self):
-        """Валидация еmail. Ошибка, если такой email уже есть"""
-        email = self.cleaned_data.get("email")
-        is_email_exists = User.objects.exclude(pk=self.instance.pk).filter(email=email).exists()
 
-        if is_email_exists:
-            raise forms.ValidationError(f"Пользователь с таким email ({email}) уже существует")
-        return email
+class UserUpdatePasswordForm(PasswordChangeForm):
+    """Форма обновления пароля пользователя"""
 
-    def clean_telephone(self):
-        """Валидация телефона. Ошибка, если такой телефон уже есть"""
-        telephone = self.cleaned_data.get('telephone')
-        is_telephone_exist = User.objects.exclude(pk=self.instance.pk).filter(telephonel=telephone).exists()
-
-        if is_telephone_exist:
-            raise forms.ValidationError(f"Пользователь с таким телефоном ({telephone}) уже существует")
-        return telephone
-
-# Todo - сделать валидаторы на каждое поле. Определить их в миксин и подмешать к двум формам
-# Todo - должно получиться два миксина form_mixins view_mixin
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control',
+                'placeholder': f'Введите {field.label.lower()}'
+            })

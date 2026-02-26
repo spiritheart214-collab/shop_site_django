@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
+from django.db.models import Q
 
 from .utils import avater_img_path
 
@@ -9,27 +10,34 @@ from .utils import avater_img_path
 class User(AbstractUser):
     """Моделль пользователя"""
 
+    name_validator = RegexValidator(
+        regex=r'^[А-Яа-яA-Za-z-]+$',
+        message="Только буквы"
+    )
+
     first_name = models.CharField(max_length=150,
-                                  blank=False,
-                                  null=False,
+                                  blank=True,
+                                  null=True,
                                   db_index=True,
                                   verbose_name="Имя",
                                   help_text="Введите имя",
 
+                                  validators=[name_validator],
+
                                   error_messages={
                                       "max_length": "Имя не может быть больше 150 символов",
-                                      "blank": "Имя обязателено для заполнения",
                                   })
 
     last_name = models.CharField(max_length=150,
-                                 blank=False,
-                                 null=False,
+                                 blank=True,
+                                 null=True,
                                  verbose_name="Фамилия",
                                  help_text="Введите фамилию",
 
+                                 validators=[name_validator],
+
                                  error_messages={
                                      "max_length": "Фамилия не может быть больше 150 символов",
-                                     "blank": "Фамилия обязателена для заполнения",
                                  })
 
     patronymic = models.CharField(max_length=150,
@@ -37,27 +45,28 @@ class User(AbstractUser):
                                   verbose_name="Отчество",
                                   help_text="Введите отчество",
 
+                                  validators=[name_validator],
+
                                   error_messages={
                                       "max_length": "Отчество не может быть больше 150 символов",
                                   })
 
     email = models.EmailField(max_length=254,
-                              blank=False,
-                              null=False,
-                              unique=True,
+                              blank=True,
+                              null=True,
+                              unique=False,
                               help_text="Введите Email",
                               verbose_name="Email",
 
                               error_messages={
                                   "max_length": "Email не может быть больше 254 символов",
-                                  "blank": "Email обязателен для заполнения",
-                                  "unique": "Пользователь с таким email уже зарегестрирован",
-                                  "invalid": "Введите корректны Email (name@domain.com)"
+                                  "invalid": "Введите корректны Email (name@domain.com)",
+                                  "blank": "Поле не может быть пустым"
                               })
 
     telephone = models.CharField(max_length=20,
-                                 blank=False,
-                                 null=False,
+                                 blank=True,
+                                 null=True,
                                  unique=True,
                                  verbose_name="Телефон",
                                  help_text="Введите номер телефон",
@@ -70,8 +79,7 @@ class User(AbstractUser):
 
                                  error_messages={
                                      "max_length": "Слишком много символов",
-                                     "blank": "Телефон обязателен для заполнения",
-                                     "unique": "Пользователь с таким телефоном уже зарегистрирован",
+                                     "blank": "Поле не может быть пустым"
                                  })
 
     avatar = models.ImageField(blank=True,
@@ -90,14 +98,15 @@ class User(AbstractUser):
                                    'invalid': 'Загрузите корректное изображение',
                                    'invalid_image': 'Файл поврежден или не является изображением',
                                })
-
-    # Настройки входа (создания суперпользователя)
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'telephone', "email"]
+    REQUIRED_FIELDS = ['email', 'telephone']
 
     def __str__(self) -> str:
         """Отображение в админке"""
-        user = f"{self.last_name} {self.first_name}"
-        return user
+        if self.full_name:
+            return self.full_name
+        if self.email:
+            return self.email
+        return f"Пользователь {self.pk}"
 
     @property
     def full_name(self) -> str:
@@ -115,14 +124,20 @@ class User(AbstractUser):
         if self.email:
             self.email = self.email.lower()
 
-            # Проверка размера файла
+        # Проверка размера файла
         if self.avatar and self.avatar.size > 2 * 1024 * 1024:
             raise ValidationError({
                 "avatar": "Размер файла не должен превышать 2 МБ"
             })
 
     class Meta:
-        """Настройка отображения в админке"""
+        """
+        Настройка отображения в админке.
+        Настройка уникальности для телефона, email.
+        Поля должны быть уникальными если их заполняют. Иначе поля будут пусты для каждого пользователя
+        """
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         ordering = ["-date_joined"]
+
+# Todo сделать возможной регистрацию бех указании номера телфона и почты
