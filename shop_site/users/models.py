@@ -1,8 +1,8 @@
+# Todo сделать возможной регистрацию бех указании номера телфона и почты
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, RegexValidator
 from django.db import models
-from django.db.models import Q
 
 from .utils import avater_img_path
 
@@ -139,5 +139,3 @@ class User(AbstractUser):
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         ordering = ["-date_joined"]
-
-# Todo сделать возможной регистрацию бех указании номера телфона и почты
