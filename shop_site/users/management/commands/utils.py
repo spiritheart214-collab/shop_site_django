@@ -8,7 +8,7 @@ from .config import User
 
 def write_down_user(full_name: str, username: str, passwords: str, extra_text: Optional[str] = None) -> None:
     """
-    Записывает дынне пользователя в файл.
+    Записывает дынные пользователя в файл.
 
     - Создает отдельную папку для хранения записей (если еще не создана)
     - Запсывает полное имя, логин и пороль пользователя
