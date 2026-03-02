@@ -1,4 +1,3 @@
-# Todo сделать возможной регистрацию бех указании номера телфона и почты
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, RegexValidator
@@ -14,6 +13,12 @@ class User(AbstractUser):
         regex=r'^[А-Яа-яA-Za-z-]+$',
         message="Только буквы"
     )
+
+    class Meta:
+        """Настройка отображения в админке."""
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
+        ordering = ["-date_joined"]
 
     first_name = models.CharField(max_length=150,
                                   blank=True,
@@ -54,7 +59,7 @@ class User(AbstractUser):
     email = models.EmailField(max_length=254,
                               blank=True,
                               null=True,
-                              unique=False,
+                              unique=True,
                               help_text="Введите Email",
                               verbose_name="Email",
 
@@ -129,13 +134,3 @@ class User(AbstractUser):
             raise ValidationError({
                 "avatar": "Размер файла не должен превышать 2 МБ"
             })
-
-    class Meta:
-        """
-        Настройка отображения в админке.
-        Настройка уникальности для телефона, email.
-        Поля должны быть уникальными если их заполняют. Иначе поля будут пусты для каждого пользователя
-        """
-        verbose_name = "Пользователь"
-        verbose_name_plural = "Пользователи"
-        ordering = ["-date_joined"]

@@ -1,0 +1,6 @@
+username,email,telephone,first_name,last_name,patronymic,password
+ivanovii,ivan.ivanov@example.com,+79991234567,Иван,Иванов,Иванович,TestPass123
+petrovpp,petr.petrov@example.com,+79997654321,Петр,Петров,Петрович,TestPass123
+sidorovss,sidorov@example.com,+79995554433,Сергей,Сидоров,Сергеевич,TestPass123
+smirnovaam,smirnova@example.com,+79998887766,Анна,Смирнова,Михайловна,TestPass123
+kuznetsovdk,kuznetsov@example.com,+79992223344,Дмитрий,Кузнецов,Константинович,TestPass123

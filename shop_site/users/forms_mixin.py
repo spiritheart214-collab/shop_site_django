@@ -1,6 +1,7 @@
 """Миксины для форм"""
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import InMemoryUploadedFile, UploadedFile
 
 User = get_user_model()
 
@@ -31,6 +32,21 @@ class UniqueTelephoneMixin:
         return telephone
 
 
-class CleanDataMixin(UniqueEmailMixin, UniqueTelephoneMixin):
+class SetAvatarSizeLimitMIixin:
+    """Миксин для ограничения размера загружаемых фотографий/аватаров пользователей"""
+
+    def clean_avatar(self):
+        """Ограничение аватара по размеру загрузки"""
+        avatar: InMemoryUploadedFile = self.cleaned_data.get("avatar")
+        size_limit = 2 * 1024 * 1024
+
+        if avatar:
+            if avatar.size > size_limit:
+                raise forms.ValidationError(f"'Размер фото не должен превышать {size_limit} МБ'")
+
+            return avatar
+
+
+class CleanDataMixin(UniqueEmailMixin, UniqueTelephoneMixin, SetAvatarSizeLimitMIixin):
     """Общий миксин для валидации данных пользователя"""
     pass
