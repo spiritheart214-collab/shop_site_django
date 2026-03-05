@@ -57,8 +57,8 @@ class User(AbstractUser):
                                   })
 
     email = models.EmailField(max_length=254,
-                              blank=True,
-                              null=True,
+                              blank=False,
+                              null=False,
                               unique=True,
                               help_text="Введите Email",
                               verbose_name="Email",
@@ -70,8 +70,8 @@ class User(AbstractUser):
                               })
 
     telephone = models.CharField(max_length=20,
-                                 blank=True,
-                                 null=True,
+                                 blank=False,
+                                 null=False,
                                  unique=True,
                                  verbose_name="Телефон",
                                  help_text="Введите номер телефон",

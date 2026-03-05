@@ -1,4 +1,4 @@
-"""Модуль с настроками url путей для приложения"""
+"""Модуль с настроками url путей для приложения users"""
 from django.urls import path
 
 from .views import (UserRegistrationView,
