@@ -45,8 +45,10 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_spectacular",
 
-    "users.apps.UsersConfig",
     "api.apps.ApiConfig",
+
+    "users.apps.UsersConfig",
+    "products.apps.ProductsConfig",
 ]
 
 MIDDLEWARE = [
