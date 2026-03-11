@@ -1,0 +1,35 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <li>
+        <a href="{% url 'admin:import_categories_csv' %}" class="addlink">
+            <i class="icon import-icon"></i>
+            Импорт категорий из CSV
+        </a>
+    </li>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        .import-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+            background: url('{% static 'admin/img/icon-import.svg' %}') no-repeat center;
+            background-size: contain;
+            vertical-align: middle;
+        }
+
+        .object-tools a.addlink .import-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .object-tools a.addlink:hover .import-icon {
+            filter: brightness(0) invert(1);
+        }
+    </style>
+{% endblock %}

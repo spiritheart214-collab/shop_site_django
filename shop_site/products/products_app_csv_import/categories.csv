@@ -1,0 +1,3 @@
+﻿name,parent,is_active,is_soft_deleted
+Телефоны,Электроника,True,False
+Электроника,,True,False
