@@ -19,7 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
     actions = ["export_as_csv"]
     change_list_template = "products/products_change_list.html"
 
-    list_display = ["name", "parent", "icon_preview", "is_active", "is_soft_deleted"]
+    list_display = ["name", "parent", "icon_preview", "is_active", "is_soft_deleted", "formatted_created_at"]
     list_display_links = ["name", "parent", "is_active", "is_soft_deleted"]
     list_filter = ("name", "is_active", "is_soft_deleted")
     search_fields = ["name"]
@@ -81,6 +81,13 @@ class CategoryAdmin(admin.ModelAdmin):
         return "Иконка не загружена"
 
     icon_preview_large.short_description = "Текущая иконка"
+
+    def formatted_created_at(self, obj: Category) -> str:
+        """Возвращает отформатированную дату создания"""
+        return obj.created_at.strftime("%d.%m.%Y")
+
+    formatted_created_at.short_description = "Дата создания"
+    formatted_created_at.admin_order_field = "created_at"
 
     @admin.action(description="Экспорт в csv")
     def export_as_csv(self, request: HttpRequest, queryset: QuerySet[Category]) -> HttpResponse:
