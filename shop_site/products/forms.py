@@ -5,7 +5,7 @@ class CSVImportForm(forms.Form):
     """Форма для ипорта CSV в админ панели"""
     csv_file: forms.FileField = forms.FileField(
         label="CSV файл",
-        help_text="Загрузите CSV файл с категориями"
+        help_text="Загрузите CSV файл"
     )
 
     def clean_csv_file(self):

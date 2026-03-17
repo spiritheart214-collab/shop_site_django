@@ -1,12 +1,16 @@
+# Todo добавить сервис перевода для ошибок ?!
+# Todo FIX: сейчас загружатся сущетсвующие товары, которые были созданы ранее
+
 """Модуль с реализующий парсинг импортируемого файла и создание категорий на его основе"""
 from csv import DictReader
+from decimal import Decimal
 from io import TextIOWrapper
 from typing import Dict, List, Union
 
 from django.core.files.uploadedfile import UploadedFile
 from django.db import IntegrityError
 
-from ..models import Category
+from ..models import Category, Product
 
 
 def parse_csv(uploaded_file: UploadedFile) -> List[Dict[str, str]]:
@@ -68,4 +72,49 @@ def str_to_bool(value: str) -> bool:
         return False
     return str(value).lower() in ("true", "1", "yes", "да")
 
-    # Todo добавить сервис перевода для ошибок ?!
+
+def create_products(products_list: List[Dict[str, str]]) -> Dict[str, Union[int, List[str]]]:
+    """
+    Создаёт продукты из списка данных.
+
+    Возвращает:
+        Dict с ключами:
+            - success: количество успешно созданных продуктов
+            - errors: список ошибок
+    """
+    print(products_list)
+    success_count = 0
+    errors = []
+
+    for index, product_data in enumerate(products_list, start=1):
+        print(f"Строка {index}: {product_data}")
+
+        try:
+            # Получаем или создаем категорию по имени
+            category_name = product_data.get("category")
+            category = None
+            if category_name:
+                category, _ = Category.objects.get_or_create(name=category_name)
+
+            # Создаем продукт
+            Product.objects.create(
+                name=product_data.get("name"),
+                manufacturer=product_data.get("manufacturer", ""),
+                category=category,
+                price=Decimal(product_data.get("price", 0)),
+                description=product_data.get("description", ""),
+                sort_index=int(product_data.get("sort_index", 0)),
+                is_limited_edition=str_to_bool(product_data.get("is_limited_edition")),
+                is_soft_deleted=str_to_bool(product_data.get("is_soft_deleted"))
+            )
+            success_count += 1
+
+        except IntegrityError as error:
+            errors.append(f"Строка {index}: Ошибка целостности - {str(error)}")
+        except Exception as error:
+            errors.append(f"Строка {index}: {str(error)}")
+
+    return {
+        "success": success_count,
+        "errors": errors
+    }

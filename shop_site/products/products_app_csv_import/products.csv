@@ -1,0 +1,6 @@
+name,manufacturer,category,price,description,sort_index,is_limited_edition,is_soft_deleted
+iPhone 16e,Apple,Электроника,69990,Смартфон с невероятным дизайном,10,true,false
+Samsung Galaxy S25,Samsung,Электроника,89990,Флагман с отличной камерой,10,false,false
+MacBook Pro 14,Apple,Ноутбуки,199990,Мощный ноутбук для профессионалов,5,true,false
+Dyson V15,Dyson,Бытовая техника,59990,Беспроводной пылесос,8,false,false
+Sony WH-1000XM5,Sony,Аксессуары,29990,Лучшие шумоподавляющие наушники,7,true,false
